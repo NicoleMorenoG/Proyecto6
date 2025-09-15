@@ -6,6 +6,18 @@ function generateToken(userId) {
     return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '7d' });
 }
 
+// Helper para formatear usuario en las respuestas (incluye timestamps)
+function formatUser(u) {
+    if (!u) return null;
+    return {
+    id: u._id,
+    name: u.name,
+    email: u.email,
+    createdAt: u.createdAt,
+    updatedAt: u.updatedAt,
+    };
+}
+
 // POST /api/user/register
 exports.register = async (req, res) => {
     try {
@@ -25,7 +37,7 @@ exports.register = async (req, res) => {
 
     return res.status(201).json({
         message: 'Usuario registrado con éxito',
-        user: { id: user._id, name: user.name, email: user.email },
+        user: formatUser(user),
         token
     });
     } catch (err) {
@@ -37,7 +49,7 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
     try {
     const { email, password } = req.body;
-    // Validar
+
     if (!email || !password) {
         return res.status(400).json({ message: 'Email y contraseña son obligatorios' });
     }
@@ -50,7 +62,7 @@ exports.login = async (req, res) => {
     const token = generateToken(user._id);
     return res.json({
         message: 'Login exitoso',
-        user: { id: user._id, name: user.name, email: user.email },
+        user: formatUser(user),
         token
     });
     } catch (err) {
@@ -60,8 +72,8 @@ exports.login = async (req, res) => {
 
 // GET /api/user/verifytoken
 exports.verifyToken = async (req, res) => {
-  // Si pasó por el middleware y no falló, req.user existe
-    return res.json({ message: 'Token válido', user: req.user });
+  // Si pasó por el middleware y no falló, req.user existe (sin password)
+    return res.json({ message: 'Token válido', user: formatUser(req.user) });
 };
 
 // PUT /api/user/update
@@ -73,14 +85,22 @@ exports.updateProfile = async (req, res) => {
     const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ message: 'Usuario no encontrado' });
 
+    // Si se quiere cambiar el email, validar duplicado
+    if (email && email !== user.email) {
+        const exists = await User.findOne({ email });
+        if (exists) {
+        return res.status(409).json({ message: 'El correo ya está registrado' });
+        }
+        user.email = email;
+    }
+
     if (name) user.name = name;
-    if (email) user.email = email;
     if (password) user.password = password; // se hashea en pre('save')
 
     await user.save();
     return res.json({
         message: 'Perfil actualizado',
-        user: { id: user._id, name: user.name, email: user.email }
+        user: formatUser(user)
     });
     } catch (err) {
     return res.status(500).json({ message: 'Error al actualizar perfil', error: err.message });
