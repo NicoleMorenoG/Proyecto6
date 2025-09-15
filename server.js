@@ -20,6 +20,15 @@ app.get('/', (req, res) => {
     res.send('Hello World desde mi Proyecto 6 🚀');
 });
 
+// Importar rutas
+const userRoutes = require('./routes/userRoutes');
+const productRoutes = require('./routes/productRoutes');
+
+// Usar rutas base 
+app.use('/api/user', userRoutes);
+app.use('/api/product', productRoutes);
+
+
 // Conexión a MongoDB
 mongoose.connect(process.env.MONGO_URI)
     .then(() => {
