@@ -1,4 +1,3 @@
-// controllers/productController.js
 const Product = require('../models/productModel');
 
 // POST /api/product/create
