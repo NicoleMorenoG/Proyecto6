@@ -25,57 +25,62 @@ components:
     User:
       type: object
       properties:
-        id: { type: string }
-        name: { type: string }
-        email: { type: string }
+        id:        { type: string }
+        name:      { type: string }
+        email:     { type: string }
         createdAt: { type: string, format: date-time }
         updatedAt: { type: string, format: date-time }
+
     RegisterRequest:
       type: object
       required: [name, email, password]
       properties:
-        name:    { type: string, example: Nico }
-        email:   { type: string, example: nico@example.com }
-        password:{ type: string, example: 123456 }
+        name:     { type: string, example: "Nico" }
+        email:    { type: string, example: "nico@example.com" }
+        password: { type: string, example: "123456" }
+
     LoginRequest:
       type: object
       required: [email, password]
       properties:
-        email:   { type: string, example: nico@example.com }
-        password:{ type: string, example: 123456 }
+        email:    { type: string, example: "nico@example.com" }
+        password: { type: string, example: "123456" }
+
     AuthResponse:
       type: object
       properties:
-        message: { type: string, example: Login exitoso }
+        message: { type: string, example: "Login exitoso" }
         user:
           $ref: '#/components/schemas/User'
         token:
           type: string
-          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+
     Product:
       type: object
       properties:
-        id:         { type: string }
-        name:       { type: string }
-        description:{ type: string }
-        price:      { type: number, example: 29990 }
+        id:          { type: string }
+        name:        { type: string }
+        description: { type: string }
+        price:       { type: number, example: 29990 }
         user:
           type: object
           properties:
-            id: { type: string }
-            name: { type: string }
+            id:    { type: string }
+            name:  { type: string }
             email: { type: string }
-        createdAt:  { type: string, format: date-time }
-        updatedAt:  { type: string, format: date-time }
+        createdAt:   { type: string, format: date-time }
+        updatedAt:   { type: string, format: date-time }
+
     ProductCreateRequest:
       type: object
       required: [name, price]
       properties:
-        name:        { type: string, example: Anillo Aura }
-        description: { type: string, example: Plata y amatista }
+        name:        { type: string, example: "Anillo Aura" }
+        description: { type: string, example: "Plata y amatista" }
         price:       { type: number, example: 29990 }
 
-paths:
+paths:  #  AQUÍ van todos los endpoints
   /api/user/register:
     post:
       tags: [User]
@@ -84,13 +89,19 @@ paths:
         required: true
         content:
           application/json:
-            schema: { $ref: '#/components/schemas/RegisterRequest' }
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+            example:
+              name: "Nico"
+              email: "nico@example.com"
+              password: "123456"
       responses:
         '201':
           description: Creado
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/AuthResponse' }
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
         '400': { description: Campos faltantes }
         '409': { description: Email ya registrado }
 
@@ -102,13 +113,18 @@ paths:
         required: true
         content:
           application/json:
-            schema: { $ref: '#/components/schemas/LoginRequest' }
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+            example:
+              email: "nico@example.com"
+              password: "123456"
       responses:
         '200':
           description: OK
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/AuthResponse' }
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
         '400': { description: Campos faltantes }
         '401': { description: Credenciales inválidas }
 
@@ -125,8 +141,8 @@ paths:
               schema:
                 type: object
                 properties:
-                  message: { type: string, example: Token válido }
-                  user: { $ref: '#/components/schemas/User' }
+                  message: { type: string, example: "Token válido" }
+                  user:    { $ref: '#/components/schemas/User' }
         '401': { description: No autorizado }
 
   /api/user/update:
@@ -141,9 +157,11 @@ paths:
             schema:
               type: object
               properties:
-                name: { type: string }
-                email: { type: string }
+                name:     { type: string }
+                email:    { type: string }
                 password: { type: string }
+            example:
+              name: "Nico V2"
       responses:
         '200':
           description: Perfil actualizado
@@ -152,8 +170,8 @@ paths:
               schema:
                 type: object
                 properties:
-                  message: { type: string, example: Perfil actualizado }
-                  user: { $ref: '#/components/schemas/User' }
+                  message: { type: string, example: "Perfil actualizado" }
+                  user:    { $ref: '#/components/schemas/User' }
         '401': { description: No autorizado }
         '409': { description: Email ya registrado }
 
@@ -166,7 +184,12 @@ paths:
         required: true
         content:
           application/json:
-            schema: { $ref: '#/components/schemas/ProductCreateRequest' }
+            schema:
+              $ref: '#/components/schemas/ProductCreateRequest'
+            example:
+              name: "Anillo Aura"
+              description: "Plata y amatista"
+              price: 29990
       responses:
         '201':
           description: Creado
@@ -175,7 +198,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  message: { type: string, example: Producto creado }
+                  message: { type: string, example: "Producto creado" }
                   product: { $ref: '#/components/schemas/Product' }
         '400': { description: Datos inválidos }
         '401': { description: No autorizado }
@@ -247,6 +270,8 @@ paths:
                 name:        { type: string }
                 description: { type: string }
                 price:       { type: number }
+            example:
+              price: 34990
       responses:
         '200':
           description: OK
@@ -255,7 +280,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  message: { type: string, example: Producto actualizado }
+                  message: { type: string, example: "Producto actualizado" }
                   product: { $ref: '#/components/schemas/Product' }
         '401': { description: No autorizado }
         '403': { description: Sin permiso }
@@ -279,7 +304,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  message: { type: string, example: Producto eliminado }
+                  message: { type: string, example: "Producto eliminado" }
         '401': { description: No autorizado }
         '403': { description: Sin permiso }
         '404': { description: No encontrado }
