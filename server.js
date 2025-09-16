@@ -27,6 +27,13 @@ const productRoutes = require('./routes/productRoutes');
 app.use('/api/user', userRoutes);
 app.use('/api/product', productRoutes);
 
+// Documentación con Swagger
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+const swaggerDoc = YAML.load('./swagger.yaml');
+
+// ...
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 
 // Conexión a MongoDB
 mongoose.connect(process.env.MONGO_URI)
